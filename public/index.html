@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destin.in - Premium Kerala DMC</title>
+    <meta name="description" content="Your Trusted Kerala Destination Management Company offering customized tour packages, houseboats, and premium services.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <!-- Placeholder for Logo. Replace 'assets/logo.png' with the actual uploaded logo file path -->
+                <img src="assets/logo.png" alt="Destin.in Logo" id="main-logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x40/1B4332/FFFFFF?text=DESTIN.IN';">
+                <span class="logo-text" style="display:none;">Destin.in</span>
+            </a>
+            
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#packages">Packages</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#planner">Trip Planner</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li id="auth-link"><a href="login.html" class="btn btn-outline" style="padding: 0.5rem 1.5rem; margin-left: 1rem;">Login</a></li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-slider">
+            <div class="slide active" style="background-image: url('assets/munnar.png');"></div>
+            <div class="slide" style="background-image: url('assets/alleppey.png');"></div>
+            <div class="slide" style="background-image: url('assets/beach.png');"></div>
+        </div>
+        
+        <div class="hero-content">
+            <h1>Experience the Magic of Kerala</h1>
+            <p>Your Trusted Kerala DMC - Discover Hills, Backwaters, and Beaches.</p>
+            <div class="hero-buttons">
+                <a href="#packages" class="btn btn-primary">Explore Packages</a>
+                <a href="#planner" class="btn btn-gold">Plan Your Trip</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Banner -->
+    <div class="container">
+        <div class="categories-banner">
+            <div class="cat-grid">
+                <div class="cat-item">
+                    <i class="fa-solid fa-mountain-sun"></i>
+                    <span>Hills</span>
+                </div>
+                <div class="cat-item">
+                    <i class="fa-solid fa-water"></i>
+                    <span>Backwaters</span>
+                </div>
+                <div class="cat-item">
+                    <i class="fa-solid fa-umbrella-beach"></i>
+                    <span>Beaches</span>
+                </div>
+                <div class="cat-item">
+                    <i class="fa-solid fa-hippo"></i>
+                    <span>Wildlife</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Destinations Section -->
+    <section id="destinations" class="bg-light">
+        <div class="container">
+            <h2 class="section-title">Explore Kerala</h2>
+            <p class="section-subtitle">Discover the most breathtaking destinations in God's Own Country, handpicked for your perfect holiday.</p>
+            
+            <div class="destinations-grid">
+                <!-- Munnar -->
+                <div class="dest-card" data-id="munnar">
+                    <img src="assets/munnar.png" alt="Munnar" class="dest-img">
+                    <div class="dest-info">
+                        <h3>Munnar</h3>
+                        <p>Lush green tea plantations and misty hills.</p>
+                        <span class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.8rem;">View Details</span>
+                    </div>
+                </div>
+
+                <!-- Alleppey -->
+                <div class="dest-card" data-id="alleppey">
+                    <img src="assets/alleppey.png" alt="Alleppey" class="dest-img">
+                    <div class="dest-info">
+                        <h3>Alleppey</h3>
+                        <p>Experience the serene backwaters on a houseboat.</p>
+                        <span class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.8rem;">View Details</span>
+                    </div>
+                </div>
+
+                <!-- Varkala/Beach -->
+                <div class="dest-card" data-id="varkala">
+                    <img src="assets/beach.png" alt="Varkala" class="dest-img">
+                    <div class="dest-info">
+                        <h3>Varkala Beach</h3>
+                        <p>Pristine beaches with majestic red cliffs.</p>
+                        <span class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.8rem;">View Details</span>
+                    </div>
+                </div>
+                
+                <!-- Placeholder for others like Wayanad, Thekkady -->
+                <div class="dest-card" data-id="wayanad">
+                    <img src="https://images.unsplash.com/photo-1594998495576-808605d8f615?auto=format&fit=crop&w=600&q=80" alt="Wayanad" class="dest-img">
+                    <div class="dest-info">
+                        <h3>Wayanad</h3>
+                        <p>Pristine nature and beautiful waterfalls.</p>
+                        <span class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.8rem;">View Details</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="#" class="btn btn-outline">View All Destinations</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tour Packages Section -->
+    <section id="packages">
+        <div class="container">
+            <h2 class="section-title">Premium Tour Packages</h2>
+            <p class="section-subtitle">Curated experiences tailored for honeymooners, families, and corporate groups.</p>
+            
+            <div class="packages-grid">
+                <!-- Package 1 -->
+                <div class="pkg-card">
+                    <img src="assets/munnar.png" alt="Honeymoon Package" class="pkg-img">
+                    <div class="pkg-content">
+                        <div class="pkg-header">
+                            <span style="color: var(--accent-gold); font-weight: bold;"><i class="fa-solid fa-heart"></i> Honeymoon</span>
+                            <span class="pkg-duration">4N / 5D</span>
+                        </div>
+                        <h3>Romantic Kerala Getaway</h3>
+                        <p>Munnar (2N) - Alleppey Houseboat (1N) - Cochin (1N). Includes candlelight dinner and floral bed decoration.</p>
+                        <div class="pkg-footer">
+                            <span style="font-weight: 700; color: var(--primary-green);">Customizable</span>
+                            <a href="#planner" class="btn btn-primary" style="padding: 0.5rem 1.5rem;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package 2 -->
+                <div class="pkg-card">
+                    <img src="assets/alleppey.png" alt="Family Package" class="pkg-img">
+                    <div class="pkg-content">
+                        <div class="pkg-header">
+                            <span style="color: var(--primary-green); font-weight: bold;"><i class="fa-solid fa-users"></i> Family Holiday</span>
+                            <span class="pkg-duration">5N / 6D</span>
+                        </div>
+                        <h3>Kerala Family Delights</h3>
+                        <p>Munnar (2N) - Thekkady (1N) - Alleppey (1N) - Kovalam (1N). Perfect mix of hills, wildlife, and beaches.</p>
+                        <div class="pkg-footer">
+                            <span style="font-weight: 700; color: var(--primary-green);">Customizable</span>
+                            <a href="#planner" class="btn btn-primary" style="padding: 0.5rem 1.5rem;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Package 3 -->
+                <div class="pkg-card">
+                    <img src="assets/beach.png" alt="Group Tour" class="pkg-img">
+                    <div class="pkg-content">
+                        <div class="pkg-header">
+                            <span style="color: #40916C; font-weight: bold;"><i class="fa-solid fa-bus"></i> Group Tour</span>
+                            <span class="pkg-duration">3N / 4D</span>
+                        </div>
+                        <h3>Short & Sweet Kerala</h3>
+                        <p>Munnar (2N) - Alleppey (1N). Quick getaway for friends and corporate groups with team building activities.</p>
+                        <div class="pkg-footer">
+                            <span style="font-weight: 700; color: var(--primary-green);">Customizable</span>
+                            <a href="#planner" class="btn btn-primary" style="padding: 0.5rem 1.5rem;">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="bg-light">
+        <div class="container">
+            <h2 class="section-title">Our Premium Services</h2>
+            <p class="section-subtitle">As your trusted Kerala DMC, we provide comprehensive travel solutions for an unforgettable journey.</p>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h3>Customized Tour Packages</h3>
+                    <p>Tailor-made itineraries to suit your exact preferences and budget.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-hotel"></i></div>
+                    <h3>Hotel & Resort Reservations</h3>
+                    <p>Access to premium resorts and luxury hotels across Kerala.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-ship"></i></div>
+                    <h3>Houseboat Experiences</h3>
+                    <p>Exclusive backwater cruises in traditional premium houseboats.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-car"></i></div>
+                    <h3>Local Transportation</h3>
+                    <p>Comfortable cabs and coaches for sightseeing and airport transfers.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <h3>MICE & Corporate Travel</h3>
+                    <p>Professional handling of meetings, incentives, conferences, and exhibitions.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-headset"></i></div>
+                    <h3>On-Site Support</h3>
+                    <p>24/7 complete ground handling and dedicated support during your trip.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Trip Planner -->
+    <section id="planner" class="planner-section">
+        <div class="container">
+            <h2 class="section-title">Design Your Perfect Trip</h2>
+            <p class="section-subtitle">Tell us what you're looking for, and our Kerala travel experts will craft the perfect itinerary for you.</p>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="planner.html" class="btn btn-gold" style="font-size: 1.5rem; padding: 1.5rem 3rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 1rem;">
+                    Launch Smart Trip Planner <i class="fa-solid fa-rocket"></i>
+                </a>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Takes less than 2 minutes to generate your perfect itinerary.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/917356821364" class="floating-whatsapp" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Destin.in</h3>
+                    <p>Your trusted Destination Management Company in Kerala. We specialize in providing premium, customized travel experiences focusing on quality, reliability, and local expertise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 style="color: white; font-size: 1.2rem;">Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="#home">Home</a>
+                        <a href="#destinations">Destinations</a>
+                        <a href="#packages">Tour Packages</a>
+                        <a href="#services">Our Services</a>
+                        <a href="#planner">Trip Planner</a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 style="color: white; font-size: 1.2rem;">Destinations</h3>
+                    <div class="footer-links">
+                        <a href="destination.html?id=munnar">Munnar</a>
+                        <a href="destination.html?id=alleppey">Alleppey</a>
+                        <a href="destination.html?id=wayanad">Wayanad</a>
+                        <a href="destination.html?id=varkala">Varkala</a>
+                        <a href="destination.html?id=cochin">Cochin</a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 style="color: white; font-size: 1.2rem;">Contact Us</h3>
+                    <div class="footer-links" style="gap: 1.2rem;">
+                        <div style="display: flex; gap: 10px; color: #aaa;">
+                            <i class="fa-solid fa-phone" style="color: var(--accent-gold); margin-top: 5px;"></i>
+                            <span>+91 7356821364</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; color: #aaa;">
+                            <i class="fa-brands fa-whatsapp" style="color: var(--accent-gold); margin-top: 5px;"></i>
+                            <span>+91 7356821364</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; color: #aaa;">
+                            <i class="fa-solid fa-envelope" style="color: var(--accent-gold); margin-top: 5px;"></i>
+                            <span>info@destin.in</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; color: #aaa;">
+                            <i class="fa-solid fa-location-dot" style="color: var(--accent-gold); margin-top: 5px;"></i>
+                            <span>Cochin, Kerala, India</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Destin.in. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

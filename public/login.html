@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Destin.in</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: var(--bg-white);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .login-card img {
+            height: 50px;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        .form-control {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <a href="index.html">
+            <img src="assets/logo.png" alt="Destin.in" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x40/1B4332/FFFFFF?text=DESTIN.IN';">
+        </a>
+        <h2 style="margin-bottom: 0.5rem; color: var(--primary-green);">Welcome Back</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Log in to access your saved trips.</p>
+        
+        <div id="error-message" class="error-msg" style="color:red; display:none; margin-bottom:1rem;"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required style="padding:0.8rem; border:1px solid #ccc; border-radius:5px;">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter password" required style="padding:0.8rem; border:1px solid #ccc; border-radius:5px;">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="loginBtn">Log In</button>
+        </form>
+        
+        <div style="margin-top: 2rem; font-size: 0.9rem;">
+            <span style="color: var(--text-muted);">Don't have an account?</span> 
+            <a href="signup.html" style="color: var(--primary-green); font-weight: 600;">Sign Up</a>
+        </div>
+        <div style="margin-top: 1rem;">
+            <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

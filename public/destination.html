@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination - Destin.in</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar scrolled" style="background: var(--bg-white);">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="assets/logo.png" alt="Destin.in Logo" id="main-logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x40/1B4332/FFFFFF?text=DESTIN.IN';">
+                <span class="logo-text" style="color: var(--primary-green); display: none;">Destin.in</span>
+            </a>
+            
+            <div class="mobile-menu-btn" style="color: var(--text-dark);">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="index.html" style="color: var(--text-dark);">Home</a></li>
+                <li><a href="index.html#destinations" style="color: var(--text-dark);">Destinations</a></li>
+                <li><a href="index.html#packages" style="color: var(--text-dark);">Packages</a></li>
+                <li><a href="index.html#services" style="color: var(--text-dark);">Services</a></li>
+                <li><a href="index.html#contact" style="color: var(--text-dark);">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Destination Header -->
+    <header class="dest-header" id="dest-header-bg" style="background-image: url('assets/munnar.png');">
+        <div class="container dest-header-content">
+            <h1 id="dest-title">Loading...</h1>
+            <p id="dest-subtitle" style="font-size: 1.5rem; opacity: 0.9;">Please wait</p>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 4rem 2rem;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 4rem;">
+            
+            <!-- Main Content Area -->
+            <div>
+                <h2 style="margin-bottom: 1rem; font-size: 2rem;">About This Destination</h2>
+                <p id="dest-desc" style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 3rem; line-height: 1.8;">
+                    <!-- Description loaded dynamically -->
+                </p>
+
+                <h2 style="margin-bottom: 2rem; font-size: 2rem; color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); padding-bottom: 0.5rem; display: inline-block;">Must Visit Places</h2>
+                <div class="must-visit-grid" id="must-visit-grid">
+                    <!-- Places loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div>
+                <div style="background: var(--bg-light); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-regular fa-calendar" style="color: var(--accent-gold);"></i> Best Time To Visit
+                    </h3>
+                    <p id="dest-time" style="font-weight: 500; font-size: 1.1rem;">-</p>
+                </div>
+
+                <div style="background: var(--primary-green); color: white; padding: 2rem; border-radius: 12px; box-shadow: var(--shadow-sm);">
+                    <h3 style="margin-bottom: 1.5rem; color: white; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-person-hiking" style="color: var(--accent-gold);"></i> Activities
+                    </h3>
+                    <ul id="dest-activities" style="list-style: none;">
+                        <!-- Activities loaded dynamically -->
+                    </ul>
+                </div>
+                
+                <!-- Related Tour Package snippet -->
+                <div style="margin-top: 2rem; border: 1px solid #eee; border-radius: 12px; overflow: hidden;">
+                    <div style="background: var(--light-green); color: white; padding: 1rem; text-align: center; font-weight: 600;">
+                        Related Package
+                    </div>
+                    <div style="padding: 1.5rem; text-align: center;">
+                        <h4 style="margin-bottom: 0.5rem;">Explore this destination</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Check out our curated packages including this location.</p>
+                        <a href="index.html#packages" class="btn btn-outline" style="width: 100%; padding: 0.5rem;">View Packages</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/917356821364" class="floating-whatsapp" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer id="contact" style="background: #111; color: #fff; padding: 3rem 0; text-align: center;">
+        <div class="container">
+            <h3 style="color: var(--accent-gold); margin-bottom: 1rem;">Destin.in</h3>
+            <p style="color: #aaa; margin-bottom: 2rem;">Your trusted Destination Management Company in Kerala.</p>
+            <a href="index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

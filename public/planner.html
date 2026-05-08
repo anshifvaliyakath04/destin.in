@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner Engine | Destin.in</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-light); padding-top: 100px; }
+        .planner-container {
+            max-width: 900px;
+            margin: 0 auto 4rem auto;
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(23, 61, 50, 0.05);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 1rem auto 0 auto;
+            max-width: 600px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gold);
+            width: 12.5%; /* Step 1 */
+            transition: width 0.4s ease;
+        }
+        .step-indicator {
+            font-weight: 600;
+            color: var(--primary-green);
+            font-family: var(--font-heading);
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            padding: 3rem;
+            animation: fadeIn 0.5s ease;
+        }
+        .step-content.active {
+            display: block;
+        }
+        
+        .step-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .step-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Selectable Cards (Destinations, Activities) */
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .select-card {
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .select-card i { font-size: 2.5rem; color: var(--text-muted); }
+        .select-card:hover { border-color: var(--light-green); transform: translateY(-5px); }
+        .select-card.selected {
+            border-color: var(--primary-green);
+            background: rgba(163, 201, 143, 0.2);
+            color: var(--primary-green);
+        }
+        .select-card.selected i { color: var(--primary-green); }
+
+        /* Form Controls Override */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-control { width: 100%; padding: 1rem; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; }
+        
+        /* Navigation Buttons */
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Range Slider Custom */
+        input[type=range] {
+            width: 100%;
+            margin: 1.5rem 0;
+            accent-color: var(--primary-green);
+        }
+        .budget-value { font-size: 1.5rem; font-weight: bold; color: var(--primary-green); text-align: center; }
+
+        /* Itinerary Timeline */
+        .timeline { border-left: 3px solid var(--accent-gold); margin-left: 20px; padding-left: 20px; }
+        .timeline-item { position: relative; margin-bottom: 2rem; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -28px; top: 0; width: 14px; height: 14px;
+            border-radius: 50%; background: var(--primary-green); border: 3px solid var(--bg-white);
+        }
+        .timeline-day { font-weight: bold; color: var(--accent-gold); margin-bottom: 0.5rem; }
+        .timeline-desc { background: #f9f9f9; padding: 1rem; border-radius: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Minimal -->
+    <nav class="navbar scrolled">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-text">Destin.in</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" style="color: var(--text-dark);"><i class="fa-solid fa-xmark"></i> Exit Planner</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="planner-container">
+            
+            <div class="progress-container">
+                <div class="step-indicator">Step <span id="currentStepNum">1</span> of 8</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <form id="masterPlannerForm">
+                
+                <!-- STEP 1: Destinations -->
+                <div class="step-content active" id="step1">
+                    <h2 class="step-title">🌍 Where do you want to go?</h2>
+                    <p class="step-subtitle">Select one or more destinations you'd like to include.</p>
+                    <div class="selection-grid dest-selector">
+                        <div class="select-card" data-val="Munnar"><i class="fa-solid fa-mountain"></i><h3>Munnar</h3><p style="font-size:0.8rem">Hills</p></div>
+                        <div class="select-card" data-val="Alleppey"><i class="fa-solid fa-water"></i><h3>Alleppey</h3><p style="font-size:0.8rem">Backwaters</p></div>
+                        <div class="select-card" data-val="Wayanad"><i class="fa-solid fa-tree"></i><h3>Wayanad</h3><p style="font-size:0.8rem">Forests</p></div>
+                        <div class="select-card" data-val="Varkala"><i class="fa-solid fa-umbrella-beach"></i><h3>Varkala</h3><p style="font-size:0.8rem">Beaches</p></div>
+                        <div class="select-card" data-val="Thekkady"><i class="fa-solid fa-hippo"></i><h3>Thekkady</h3><p style="font-size:0.8rem">Wildlife</p></div>
+                        <div class="select-card" data-val="Kochi"><i class="fa-solid fa-city"></i><h3>Kochi</h3><p style="font-size:0.8rem">Heritage</p></div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Date & Duration -->
+                <div class="step-content" id="step2">
+                    <h2 class="step-title">📅 When are you traveling?</h2>
+                    <p class="step-subtitle">Let us know your dates and how long you want to stay.</p>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Arrival Date</label>
+                            <input type="date" id="p_start_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <select id="p_duration" class="form-control" required>
+                                <option value="">Select Duration</option>
+                                <option value="3N/4D">3 Nights / 4 Days</option>
+                                <option value="4N/5D">4 Nights / 5 Days</option>
+                                <option value="5N/6D">5 Nights / 6 Days</option>
+                                <option value="7N/8D">7 Nights / 8 Days</option>
+                                <option value="Custom">More than 8 Days</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Travelers -->
+                <div class="step-content" id="step3">
+                    <h2 class="step-title">👥 Who is traveling?</h2>
+                    <p class="step-subtitle">Tell us about your group size and type.</p>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Adults (12+ yrs)</label>
+                            <input type="number" id="p_adults" class="form-control" min="1" value="2" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Children (0-11 yrs)</label>
+                            <input type="number" id="p_children" class="form-control" min="0" value="0">
+                        </div>
+                    </div>
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Travel Type</h3>
+                    <div class="selection-grid type-selector single-select">
+                        <div class="select-card" data-val="Solo"><i class="fa-solid fa-person"></i><h3>Solo</h3></div>
+                        <div class="select-card selected" data-val="Couple"><i class="fa-solid fa-user-group"></i><h3>Couple</h3></div>
+                        <div class="select-card" data-val="Family"><i class="fa-solid fa-children"></i><h3>Family</h3></div>
+                        <div class="select-card" data-val="Group"><i class="fa-solid fa-users"></i><h3>Group</h3></div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Budget -->
+                <div class="step-content" id="step4">
+                    <h2 class="step-title">💰 Set Your Budget</h2>
+                    <p class="step-subtitle">Help us curate the perfect experience within your range (per person).</p>
+                    
+                    <div class="budget-value">₹ <span id="budgetValue">25,000</span>+</div>
+                    <input type="range" id="p_budget" min="5000" max="100000" step="5000" value="25000">
+                    <div style="display:flex; justify-content:space-between; color:var(--text-muted);">
+                        <span>₹5,000</span>
+                        <span>₹1,00,000+</span>
+                    </div>
+
+                    <h3 style="margin-top: 2rem; margin-bottom: 1rem; text-align: center;">Package Tier</h3>
+                    <div class="selection-grid pkg-selector single-select">
+                        <div class="select-card" data-val="Budget"><i class="fa-solid fa-wallet"></i><h3>Budget</h3></div>
+                        <div class="select-card selected" data-val="Standard"><i class="fa-solid fa-star"></i><h3>Standard</h3></div>
+                        <div class="select-card" data-val="Luxury"><i class="fa-solid fa-gem"></i><h3>Luxury</h3></div>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Stay & Transport -->
+                <div class="step-content" id="step5">
+                    <h2 class="step-title">🏨 Stay & Transport Options</h2>
+                    <p class="step-subtitle">Select your preferred accommodation and travel mode.</p>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Hotel Category</label>
+                            <select id="p_hotel" class="form-control" required>
+                                <option value="3 Star">3★ Standard Hotel</option>
+                                <option value="4 Star">4★ Premium Hotel</option>
+                                <option value="5 Star">5★ Luxury Hotel</option>
+                                <option value="Resort">Nature Resort / Boutique</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Local Transport</label>
+                            <select id="p_transport" class="form-control" required>
+                                <option value="Private Cab">Private AC Cab (Recommended)</option>
+                                <option value="Bus">Public Transport / Bus</option>
+                                <option value="Self Drive">Self Drive Car Rental</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Activities -->
+                <div class="step-content" id="step6">
+                    <h2 class="step-title">🎯 Activities & Preferences</h2>
+                    <p class="step-subtitle">What do you want to experience in Kerala?</p>
+                    
+                    <div class="selection-grid act-selector">
+                        <div class="select-card" data-val="Sightseeing"><i class="fa-solid fa-camera"></i><h3>Sightseeing</h3></div>
+                        <div class="select-card" data-val="Adventure"><i class="fa-solid fa-person-hiking"></i><h3>Adventure</h3></div>
+                        <div class="select-card" data-val="Wildlife Safari"><i class="fa-solid fa-elephant"></i><h3>Wildlife Safari</h3></div>
+                        <div class="select-card" data-val="Houseboat Stay"><i class="fa-solid fa-sailboat"></i><h3>Houseboat</h3></div>
+                        <div class="select-card" data-val="Ayurveda"><i class="fa-solid fa-spa"></i><h3>Ayurveda Massage</h3></div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:2rem;">
+                        <label>Food Preference</label>
+                        <select id="p_food" class="form-control">
+                            <option value="Any">Any / Both</option>
+                            <option value="Pure Veg">Pure Vegetarian</option>
+                            <option value="Non Veg">Non-Vegetarian preferred</option>
+                            <option value="Halal">Halal</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top:1rem;">
+                        <label>Special Requests (Optional)</label>
+                        <textarea id="p_requests" class="form-control" rows="2" placeholder="E.g., Honeymoon bed decoration, wheelchair accessible, etc."></textarea>
+                    </div>
+                </div>
+
+                <!-- STEP 7: Auto Itinerary -->
+                <div class="step-content" id="step7">
+                    <h2 class="step-title">🗺️ Your Smart Itinerary</h2>
+                    <p class="step-subtitle">Based on your selections, here is a preview of your trip.</p>
+                    
+                    <!-- Mock Map Graphic -->
+                    <div style="background:var(--bg-light); border-radius:12px; height:200px; display:flex; align-items:center; justify-content:center; margin-bottom:2rem; border:2px dashed #ccc;">
+                        <div style="text-align:center; color:var(--text-muted);">
+                            <i class="fa-solid fa-map-location-dot" style="font-size:3rem; margin-bottom:1rem; color:var(--primary-green)"></i>
+                            <p>Map Route Preview Generated</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline" id="itineraryTimeline">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- STEP 8: Summary & Book -->
+                <div class="step-content" id="step8">
+                    <h2 class="step-title">💳 Final Summary</h2>
+                    <p class="step-subtitle">Review your custom package and confirm.</p>
+                    
+                    <div style="background:#f9f9f9; padding:2rem; border-radius:12px; margin-bottom:2rem;">
+                        <h3 style="border-bottom:1px solid #ddd; padding-bottom:1rem; margin-bottom:1rem;">Cost Breakdown</h3>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                            <span>Base Package (<span id="sumPax"></span>)</span>
+                            <span id="sumBasePrice">₹0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                            <span>Hotel Upgrades (<span id="sumHotel"></span>)</span>
+                            <span id="sumHotelPrice">₹0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                            <span>Taxes & Fees (5% GST)</span>
+                            <span id="sumTax">₹0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:1rem; padding-top:1rem; border-top:1px dashed #ccc; font-weight:bold; font-size:1.5rem; color:var(--primary-green);">
+                            <span>Estimated Total</span>
+                            <span id="sumTotal">₹0</span>
+                        </div>
+                    </div>
+
+                    <p style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">
+                        By clicking "Submit Booking Request", our travel experts will verify availability and contact you with the final payment link.
+                    </p>
+                </div>
+
+                <div class="step-nav" style="padding: 0 3rem 3rem 3rem;">
+                    <button type="button" class="btn btn-outline" id="prevBtn" style="display:none;">Back</button>
+                    <div style="flex-grow: 1;"></div>
+                    <button type="button" class="btn btn-primary" id="nextBtn">Continue to Step 2 <i class="fa-solid fa-arrow-right"></i></button>
+                    <button type="button" class="btn btn-gold" id="submitBtn" style="display:none;">Submit Booking Request <i class="fa-solid fa-check"></i></button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="planner.js"></script>
+</body>
+</html>

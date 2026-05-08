@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Destin.in</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: var(--bg-light); }
+        .admin-nav {
+            background: var(--primary-green);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-nav a { color: white; margin-left: 1rem; }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f9f9f9; color: var(--primary-green); font-weight: 600; }
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .filter-group input, .filter-group select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="admin-nav">
+        <div style="font-weight: bold; font-size: 1.2rem;">
+            <i class="fa-solid fa-user-shield"></i> Destin.in Admin
+        </div>
+        <div>
+            <a href="index.html">View Site</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <h2>Dashboard Overview</h2>
+        
+        <!-- Trips Section -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Planned Trips</h3>
+            <div class="filter-group">
+                <input type="text" id="filterDestination" placeholder="Filter by Destination">
+                <select id="filterType">
+                    <option value="">All Travel Types</option>
+                    <option value="honeymoon">Honeymoon</option>
+                    <option value="family">Family</option>
+                    <option value="group">Group</option>
+                    <option value="corporate">Corporate</option>
+                </select>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="tripsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>Destinations</th>
+                            <th>Duration</th>
+                            <th>Travel Type</th>
+                            <th>Package</th>
+                            <th>Est. Price</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Trips populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem;">Registered Users</h3>
+            <div style="overflow-x: auto;">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Users populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
