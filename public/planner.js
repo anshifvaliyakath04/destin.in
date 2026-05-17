@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Wizard State
     let currentStep = 1;
-    const totalSteps = 8;
+    const totalSteps = 6;
     
     // UI Elements
     const steps = document.querySelectorAll('.step-content');
@@ -22,21 +22,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Data Store
     const tripData = {
+        customer_phone: '',
+        customer_whatsapp: '',
+        customer_email: '',
+        customer_address: '',
+        pickup_location: '',
         destinations: [],
         start_date: '',
         duration: '',
         adults: 2,
         children: 0,
         travel_type: 'Couple',
-        budget_range: '25000',
-        package_type: 'Standard',
-        hotel_category: '3 Star',
-        transport: 'Private Cab',
-        activities: [],
         food_pref: 'Any',
         special_requests: '',
+        // Payload compatibility for backend models
+        budget_range: 'Not specified',
+        package_type: 'Not specified',
+        hotel_category: 'Not specified',
+        transport: 'Not specified',
+        activities: [],
         estimated_price: 0
     };
+
+    // Pre-select destination if passed via URL (e.g. planner.html?dest=Munnar)
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectDest = urlParams.get('dest');
+    if (preselectDest) {
+        // Find by lower casing dataset value match
+        const cards = document.querySelectorAll('.dest-selector .select-card');
+        cards.forEach(card => {
+            if(card.dataset.val.toLowerCase() === preselectDest.toLowerCase()) {
+                card.classList.add('selected');
+            }
+        });
+    }
 
     // Card Selection Logic (Multi & Single)
     document.querySelectorAll('.select-card').forEach(card => {
@@ -50,21 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Update Data instantly
                 if(container.classList.contains('type-selector')) tripData.travel_type = this.dataset.val;
-                if(container.classList.contains('pkg-selector')) tripData.package_type = this.dataset.val;
             } 
             // Multi Select Mode
             else {
                 this.classList.toggle('selected');
             }
         });
-    });
-
-    // Budget Slider sync
-    const budgetSlider = document.getElementById('p_budget');
-    const budgetValue = document.getElementById('budgetValue');
-    budgetSlider.addEventListener('input', (e) => {
-        budgetValue.textContent = parseInt(e.target.value).toLocaleString();
-        tripData.budget_range = e.target.value;
     });
 
     // Navigation Logic
@@ -89,14 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentStep === totalSteps) {
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'inline-block';
-            generateSummary(); // Final calculation
+            generateSummary(); // Final data aggregation
         } else {
             nextBtn.style.display = 'inline-block';
             submitBtn.style.display = 'none';
             nextBtn.innerHTML = `Continue to Step ${currentStep + 1} <i class="fa-solid fa-arrow-right"></i>`;
             
-            // If arriving at step 7, generate itinerary mock
-            if (currentStep === 7) generateItineraryMock();
+
         }
     }
 
@@ -112,7 +121,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else if (currentStep === 2) {
             tripData.start_date = document.getElementById('p_start_date').value;
-            tripData.duration = document.getElementById('p_duration').value;
+            let dur = document.getElementById('p_duration').value;
+            if (dur === 'Custom') {
+                const n = document.getElementById('p_custom_nights').value;
+                const d = document.getElementById('p_custom_days').value;
+                if (!n || !d) {
+                    alert("Please specify the number of custom nights and days.");
+                    return false;
+                }
+                dur = `${n} Nights / ${d} Days`;
+            }
+            tripData.duration = dur;
             if (!tripData.start_date || !tripData.duration) {
                 alert("Please fill all date fields.");
                 return false;
@@ -122,14 +141,27 @@ document.addEventListener('DOMContentLoaded', () => {
             tripData.adults = parseInt(document.getElementById('p_adults').value);
             tripData.children = parseInt(document.getElementById('p_children').value);
         }
-        else if (currentStep === 5) {
-            tripData.hotel_category = document.getElementById('p_hotel').value;
-            tripData.transport = document.getElementById('p_transport').value;
-        }
-        else if (currentStep === 6) {
-            tripData.activities = Array.from(document.querySelectorAll('.act-selector .selected')).map(c => c.dataset.val);
+        else if (currentStep === 4) {
             tripData.food_pref = document.getElementById('p_food').value;
             tripData.special_requests = document.getElementById('p_requests').value;
+        }
+        else if (currentStep === 5) {
+            const phone = document.getElementById('p_phone').value.trim();
+            const whatsapp = document.getElementById('p_whatsapp').value.trim();
+            const email = document.getElementById('p_email').value.trim();
+            const address = document.getElementById('p_address').value.trim();
+            const pickup = document.getElementById('p_pickup').value.trim();
+            
+            if (!phone || !whatsapp || !email || !address || !pickup) {
+                alert("Please fill in all contact and pickup details before proceeding.");
+                return false;
+            }
+            
+            tripData.customer_phone = phone;
+            tripData.customer_whatsapp = whatsapp;
+            tripData.customer_email = email;
+            tripData.customer_address = address;
+            tripData.pickup_location = pickup;
         }
         return true;
     }
@@ -148,74 +180,20 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0,0);
     });
 
-    // -----------------------------------------
-    // Smart Itinerary Generation (Mock)
-    // -----------------------------------------
-    function generateItineraryMock() {
-        const timeline = document.getElementById('itineraryTimeline');
-        timeline.innerHTML = '';
-        
-        let days = 4; // Default
-        if(tripData.duration.includes('3N')) days = 4;
-        if(tripData.duration.includes('4N')) days = 5;
-        if(tripData.duration.includes('5N')) days = 6;
-        if(tripData.duration.includes('7N')) days = 8;
-        
-        const destCount = tripData.destinations.length;
-        
-        for(let i=1; i<=days; i++) {
-            let desc = "";
-            let currentDest = tripData.destinations[(i-1) % destCount]; // Cycle through picked places
-            
-            if(i === 1) desc = `Arrival in Kerala. Transfer to ${currentDest} in your ${tripData.transport}. Check-in to your ${tripData.hotel_category} and relax.`;
-            else if(i === days) desc = `Breakfast at hotel. Proceed for departure with sweet memories of Kerala.`;
-            else {
-                const act = tripData.activities.length > 0 ? tripData.activities[i % tripData.activities.length] : 'Local Sightseeing';
-                desc = `Full day exploring ${currentDest}. Enjoy ${act} as part of your custom package.`;
-            }
 
-            const item = document.createElement('div');
-            item.className = 'timeline-item';
-            item.innerHTML = `
-                <div class="timeline-day">Day ${i}</div>
-                <div class="timeline-desc">${desc}</div>
-            `;
-            timeline.appendChild(item);
-        }
-    }
 
     // -----------------------------------------
-    // Price Calculation
+    // Generate Summary
     // -----------------------------------------
     function generateSummary() {
-        // Base Price per adult
-        let basePerAdult = 12000; 
-        if(tripData.package_type === 'Budget') basePerAdult = 8000;
-        if(tripData.package_type === 'Luxury') basePerAdult = 25000;
-
-        let durationMultiplier = parseInt(tripData.duration.charAt(0)) || 4; // e.g. 4N -> 4
-        
-        const baseTotal = (basePerAdult * durationMultiplier * tripData.adults) + (basePerAdult * durationMultiplier * tripData.children * 0.5);
-        
-        // Hotel Upgrades
-        let hotelMarkup = 0;
-        if(tripData.hotel_category === '4 Star') hotelMarkup = 5000 * durationMultiplier;
-        if(tripData.hotel_category === '5 Star') hotelMarkup = 12000 * durationMultiplier;
-        if(tripData.hotel_category === 'Resort') hotelMarkup = 15000 * durationMultiplier;
-
-        const subtotal = baseTotal + hotelMarkup;
-        const tax = subtotal * 0.05; // 5% GST
-        const finalPrice = Math.round(subtotal + tax);
-
-        tripData.estimated_price = finalPrice;
-
         // UI Update
-        document.getElementById('sumPax').textContent = `${tripData.adults} Adults, ${tripData.children} Children`;
-        document.getElementById('sumBasePrice').textContent = `₹${baseTotal.toLocaleString()}`;
-        document.getElementById('sumHotel').textContent = tripData.hotel_category;
-        document.getElementById('sumHotelPrice').textContent = `₹${hotelMarkup.toLocaleString()}`;
-        document.getElementById('sumTax').textContent = `₹${Math.round(tax).toLocaleString()}`;
-        document.getElementById('sumTotal').textContent = `₹${finalPrice.toLocaleString()}`;
+        document.getElementById('sumDest').textContent = tripData.destinations.join(', ');
+        document.getElementById('sumDuration').textContent = tripData.duration;
+        document.getElementById('sumPax').textContent = `${tripData.adults} Adults, ${tripData.children} Children (${tripData.travel_type})`;
+        document.getElementById('sumFood').textContent = tripData.food_pref;
+        document.getElementById('sumEmail').textContent = tripData.customer_email;
+        document.getElementById('sumPhone').textContent = `${tripData.customer_phone} / ${tripData.customer_whatsapp}`;
+        document.getElementById('sumPickup').textContent = tripData.pickup_location;
     }
 
     // -----------------------------------------
@@ -226,7 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.innerHTML = 'Processing...';
 
         try {
-            const res = await fetch('http://localhost:5000/api/trips', {
+            const API_URL = window.location.port === '5000' ? '/api' : 'http://localhost:5000/api';
+            const res = await fetch(`${API_URL}/trips`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -236,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if(res.ok) {
-                alert('Success! Your incredible Kerala trip request has been submitted. Our team will contact you shortly.');
+                alert('Success! Your incredible Kerala trip request has been submitted. Our team will contact you shortly with a quotation.');
                 window.location.href = 'index.html';
             } else {
                 const err = await res.json();
@@ -248,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             alert("Network error occurred.");
             submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Booking Request';
         }
     });
 });

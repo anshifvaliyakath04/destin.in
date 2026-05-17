@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------
     // Authentication & API Logic (Node.js/Sybase Backend Integration)
     // -------------------------------------------------------------------
-    const API_URL = 'http://localhost:5000/api';
+    const API_URL = window.location.port === '5000' ? '/api' : 'http://localhost:5000/api';
 
     // Handle Login
     const loginForm = document.getElementById('loginForm');
@@ -221,16 +221,20 @@ window.logout = function() {
 const destinationData = {
     munnar: {
         title: "Munnar",
-        subtitle: "The Kashmir of South India",
+        subtitle: "Where misty hills meet endless tea gardens",
         image: "assets/munnar.png",
-        description: "Rolling hills, lush tea plantations, and cool breeze make Munnar a paradise for nature lovers.",
+        description: "From rolling green plantations and cool mountain air to breathtaking viewpoints and waterfalls, Munnar is a perfect escape into nature. Explore Eravikulam National Park and spot the Nilgiri Tahr, enjoy peaceful moments at Mattupetty Dam & Kundala Lake, witness the magical sunrise at Top Station, and experience Kolukkumalai - the world's highest tea estate.",
         bestTime: "September to March",
         activities: ["Tea Estate Tours", "Trekking", "Wildlife Spotting", "Camping"],
         places: [
-            { name: "Eravikulam National Park", img: "https://images.unsplash.com/photo-1593693411515-c20261bcad6e?auto=format&fit=crop&w=600&q=80" },
-            { name: "Mattupetty Dam", img: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=600&q=80" },
-            { name: "Tea Plantations", img: "assets/munnar.png" },
-            { name: "Top Station", img: "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=600&q=80" }
+            { name: "Tea Gardens", img: "assets/tea_gardens.png" },
+            { name: "Eravikulam National Park", img: "assets/eravikulam.png" },
+            { name: "Echo Point", img: "assets/echo_point.png" },
+            { name: "Top Station", img: "assets/top_station.png" },
+            { name: "Mattupetty Dam", img: "assets/mattupetty_dam.png" },
+            { name: "Kundala Lake", img: "assets/kundala_lake.png" },
+            { name: "Attukad Waterfalls", img: "assets/attukad_waterfalls.png" },
+            { name: "Kolukkumalai", img: "assets/kolukkumalai.png" }
         ]
     },
     alleppey: {
@@ -244,6 +248,34 @@ const destinationData = {
             { name: "Vembanad Lake", img: "https://images.unsplash.com/photo-1621215320573-0414f48b11a5?auto=format&fit=crop&w=600&q=80" },
             { name: "Marari Beach", img: "https://images.unsplash.com/photo-1598288825838-8422791cc352?auto=format&fit=crop&w=600&q=80" },
             { name: "Alleppey Beach", img: "assets/beach.png" }
+        ]
+    },
+    ponmudi: {
+        title: "Ponmudi",
+        subtitle: "The Golden Peak of Kerala",
+        image: "assets/ponmudi.png",
+        description: "Escape to the misty hills of Ponmudi, one of the most scenic hill stations in Kerala. Surrounded by lush greenery, winding roads, waterfalls, and breathtaking viewpoints, Ponmudi is perfect for a peaceful nature getaway.",
+        bestTime: "October to March",
+        activities: ["Trekking", "Nature Walks", "Cool Mountain Escapes"],
+        places: [
+            { name: "Peppara Wildlife Sanctuary", img: "assets/ponmudi_peppara.png" },
+            { name: "Tea Estates", img: "assets/ponmudi_tea_estates.jpg" },
+            { name: "Meenmutty Waterfalls", img: "assets/ponmudi_meenmutty.png" },
+            { name: "Golden Valley", img: "assets/ponmudi_golden_valley.jpg" },
+            { name: "Agasthyakoodam Trek Route", img: "assets/ponmudi_agasthyakoodam.png" }
+        ]
+    },
+    peermade: {
+        title: "Peermade",
+        subtitle: "Vast tea and spice plantations",
+        image: "assets/peermade.png",
+        description: "Peermade is also famous for eco-tourism. The breathtaking sights of the coffee, tea, pepper and cardamom plantations, waterfalls etc is something unique, which you can only experience here at this hill station.",
+        bestTime: "September to April",
+        activities: ["Trekking", "Cycling", "Horse Riding"],
+        places: [
+            { name: "Pattumala Church", img: "assets/pattumala_church.png" },
+            { name: "Coffee & Tea Plantations", img: "assets/peermade_plantations.png" },
+            { name: "Scenic Waterfalls", img: "assets/peermade_waterfalls.png" }
         ]
     }
 };

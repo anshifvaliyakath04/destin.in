@@ -4,8 +4,14 @@ const TripSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
     },
+    customer_name: { type: String },
+    customer_phone: { type: String },
+    customer_whatsapp: { type: String },
+    customer_email: { type: String },
+    customer_address: { type: String },
+    pickup_location: { type: String },
     // Step 1
     destinations: [{ type: String }],
     // Step 2
@@ -27,7 +33,8 @@ const TripSchema = new mongoose.Schema({
     special_requests: { type: String },
     // Step 7/8
     estimated_price: { type: Number },
-    status: { type: String, default: 'Pending' }
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+    payment_status: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Trip', TripSchema);

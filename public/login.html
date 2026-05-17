@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--light-green) 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--light-green) 100%);
             height: 100vh;
             display: flex;
             align-items: center;
@@ -45,10 +45,10 @@
 <body>
 
     <div class="login-card">
-        <a href="index.html">
-            <img src="assets/logo.png" alt="Destin.in" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x40/1B4332/FFFFFF?text=DESTIN.IN';">
+        <a href="index.html" style="text-decoration: none;">
+            <h1 style="color: var(--primary-color); font-family: var(--font-heading); margin-bottom: 1rem; font-size: 2.5rem;">Destin.in</h1>
         </a>
-        <h2 style="margin-bottom: 0.5rem; color: var(--primary-green);">Welcome Back</h2>
+        <h2 style="margin-bottom: 0.5rem; color: var(--primary-color);">Welcome Back</h2>
         <p style="color: var(--text-muted); margin-bottom: 2rem;">Log in to access your saved trips.</p>
         
         <div id="error-message" class="error-msg" style="color:red; display:none; margin-bottom:1rem;"></div>
@@ -65,10 +65,14 @@
             
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;" id="loginBtn">Log In</button>
         </form>
+
+        <div style="margin-top: 1rem; text-align: right;">
+            <a href="forgot-password.html" style="color: var(--primary-color); font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-key"></i> Forgot Password?</a>
+        </div>
         
-        <div style="margin-top: 2rem; font-size: 0.9rem;">
+        <div style="margin-top: 1.5rem; font-size: 0.9rem;">
             <span style="color: var(--text-muted);">Don't have an account?</span> 
-            <a href="signup.html" style="color: var(--primary-green); font-weight: 600;">Sign Up</a>
+            <a href="signup.html" style="color: var(--primary-color); font-weight: 600;">Sign Up</a>
         </div>
         <div style="margin-top: 1rem;">
             <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem;"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
@@ -78,3 +82,6 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
+
