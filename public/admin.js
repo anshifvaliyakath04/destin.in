@@ -218,8 +218,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchDest = dests.includes(destQuery);
             const matchCust = t.user_name ? t.user_name.toLowerCase().includes(custQuery) : false;
 
-            // Date filter based on booking created_at date
-            const tripDate = t.created_at ? new Date(t.created_at).toISOString().split('T')[0] : '';
+            // Date filter based on booking created_at date (local timezone adjusted)
+            let tripDate = '';
+            if (t.created_at) {
+                const d = new Date(t.created_at);
+                tripDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            }
             const matchFrom = dateFrom ? tripDate >= dateFrom : true;
             const matchTo = dateTo ? tripDate <= dateTo : true;
 
@@ -245,7 +249,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const dests = t.destinations ? t.destinations.toLowerCase() : '';
             const matchDest = dests.includes(destQuery);
             const matchCust = t.user_name ? t.user_name.toLowerCase().includes(custQuery) : false;
-            const tripDate = t.created_at ? new Date(t.created_at).toISOString().split('T')[0] : '';
+            let tripDate = '';
+            if (t.created_at) {
+                const d = new Date(t.created_at);
+                tripDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            }
             const matchFrom = dateFrom ? tripDate >= dateFrom : true;
             const matchTo = dateTo ? tripDate <= dateTo : true;
             return matchDest && matchCust && matchFrom && matchTo;
@@ -352,7 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if(res.ok) {
                 closeStatusModal();
-                alert('Status updated! (Check server console for confirmation email preview)');
+                
+                // Server-side will now send confirmation email automatically in the background.
+                alert('Status updated successfully! Confirmation email is being sent.');
                 fetchTrips();
                 fetchStats();
             } else {
@@ -363,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error updating status'); 
         }
     };
+
 
     window.updatePayment = async (id, payment_status) => {
         try {
@@ -547,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const customer_phone = document.getElementById('newTripPhone').value.trim();
         const customer_whatsapp = document.getElementById('newTripWhatsapp').value.trim();
         const customer_email = document.getElementById('newTripEmail').value.trim();
-        const customer_address = document.getElementById('newTripAddress').value.trim();
+        const customer_address = '';
         const pickup_location = document.getElementById('newTripPickup').value.trim();
         const destString = document.getElementById('newTripDestinations').value.trim();
         const start_date = document.getElementById('newTripStartDate').value;
