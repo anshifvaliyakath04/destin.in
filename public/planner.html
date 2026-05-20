@@ -294,6 +294,10 @@
                     <h2 class="step-title">📞 Contact & Pickup Details</h2>
                     <p class="step-subtitle">Please provide your contact information and pickup location so we can arrange your trip smoothly.</p>
                     
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Full Name *</label>
+                        <input type="text" id="p_name" class="form-control" placeholder="Enter your full name" required>
+                    </div>
                     <div class="grid-2">
                         <div class="form-group">
                             <label>Phone Number *</label>
@@ -309,10 +313,6 @@
                         <input type="email" id="p_email" class="form-control" placeholder="Enter your email address" required>
                     </div>
                     <div class="form-group" style="margin-top: 1.5rem;">
-                        <label>Address *</label>
-                        <textarea id="p_address" class="form-control" rows="5" placeholder="Enter your full residential address..." required></textarea>
-                    </div>
-                    <div class="form-group" style="margin-top: 1.5rem;">
                         <label>Pickup Location / Near Point *</label>
                         <textarea id="p_pickup" class="form-control" rows="5" placeholder="Please mention the nearest landmark, station, or airport where we should pick you up..." required></textarea>
                     </div>
@@ -325,6 +325,10 @@
                     
                     <div style="background:#f9f9f9; padding:2rem; border-radius:12px; margin-bottom:2rem;">
                         <h3 style="border-bottom:1px solid #ddd; padding-bottom:1rem; margin-bottom:1rem;">Request Details</h3>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; border-bottom:1px dashed #eee; padding-bottom:0.5rem;">
+                            <span style="font-weight:600;">Full Name</span>
+                            <span id="sumName"></span>
+                        </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom:0.8rem; border-bottom:1px dashed #eee; padding-bottom:0.5rem;">
                             <span style="font-weight:600;">Destinations</span>
                             <span id="sumDest" style="text-align:right;"></span>

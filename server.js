@@ -206,6 +206,7 @@ const sendConfirmationEmail = async (email, name, destination, status, trip = nu
     }
 };
 
+
 // ---------------------------------------------------------
 // MongoDB Connection
 // ---------------------------------------------------------
@@ -227,6 +228,25 @@ const verifyToken = (req, res, next) => {
     
     jwt.verify(tokenPart, JWT_SECRET, (err, decoded) => {
         if (err) return res.status(401).json({ error: 'Unauthorized!' });
+        req.userId = decoded.id;
+        req.userRole = decoded.role;
+        next();
+    });
+};
+
+const optionalVerifyToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token) return next();
+    
+    const tokenPart = token.split(' ')[1] || token;
+    if (!tokenPart || tokenPart === 'null' || tokenPart === 'undefined') {
+        return next();
+    }
+    
+    jwt.verify(tokenPart, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return next();
+        }
         req.userId = decoded.id;
         req.userRole = decoded.role;
         next();
@@ -426,7 +446,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 // ---------------------------------------------------------
 // Trip Routes
 // ---------------------------------------------------------
-app.post('/api/trips', verifyToken, async (req, res) => {
+app.post('/api/trips', optionalVerifyToken, async (req, res) => {
     try {
         const { 
             customer_name, customer_phone, customer_whatsapp, 
@@ -437,9 +457,18 @@ app.post('/api/trips', verifyToken, async (req, res) => {
             hotel_category, transport, 
             activities, food_pref, special_requests, estimated_price
         } = req.body;
+
+        // Auto-link registered user if they aren't logged in but their email is registered
+        let linkedUserId = req.userId || null;
+        if (!linkedUserId && customer_email) {
+            const matchedUser = await User.findOne({ email: customer_email.toLowerCase().trim() });
+            if (matchedUser) {
+                linkedUserId = matchedUser._id;
+            }
+        }
         
         const newTrip = new Trip({
-            user_id: req.userId,
+            user_id: linkedUserId,
             customer_name,
             customer_phone,
             customer_whatsapp,

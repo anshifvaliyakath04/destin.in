@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (res.ok) {
                     localStorage.setItem('token', data.accessToken);
-                    localStorage.setItem('user', JSON.stringify({ id: data.id, name: data.name, role: data.role }));
+                    localStorage.setItem('user', JSON.stringify({ id: data.id, name: data.name, email: data.email, role: data.role }));
                     
                     if(data.role === 'admin') {
                         window.location.href = 'admin.html';

@@ -1,11 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Auth Check
+    // Auth Token Check (Optional)
     const token = localStorage.getItem('token');
-    if (!token) {
-        alert("Please login to use the Trip Planner!");
-        window.location.href = 'login.html';
-        return;
+    const userStr = localStorage.getItem('user');
+    
+    // Auto-prefill user info if logged in
+    if (userStr) {
+        try {
+            const loggedInUser = JSON.parse(userStr);
+            if (loggedInUser) {
+                if (loggedInUser.name) {
+                    const nameInput = document.getElementById('p_name');
+                    if (nameInput) nameInput.value = loggedInUser.name;
+                }
+                if (loggedInUser.email) {
+                    const emailInput = document.getElementById('p_email');
+                    if (emailInput) emailInput.value = loggedInUser.email;
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing logged-in user info for pre-fill:", e);
+        }
     }
 
     // Wizard State
@@ -22,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Data Store
     const tripData = {
+        customer_name: '',
         customer_phone: '',
         customer_whatsapp: '',
         customer_email: '',
@@ -146,21 +162,22 @@ document.addEventListener('DOMContentLoaded', () => {
             tripData.special_requests = document.getElementById('p_requests').value;
         }
         else if (currentStep === 5) {
+            const name = document.getElementById('p_name').value.trim();
             const phone = document.getElementById('p_phone').value.trim();
             const whatsapp = document.getElementById('p_whatsapp').value.trim();
             const email = document.getElementById('p_email').value.trim();
-            const address = document.getElementById('p_address').value.trim();
             const pickup = document.getElementById('p_pickup').value.trim();
             
-            if (!phone || !whatsapp || !email || !address || !pickup) {
+            if (!name || !phone || !whatsapp || !email || !pickup) {
                 alert("Please fill in all contact and pickup details before proceeding.");
                 return false;
             }
             
+            tripData.customer_name = name;
             tripData.customer_phone = phone;
             tripData.customer_whatsapp = whatsapp;
             tripData.customer_email = email;
-            tripData.customer_address = address;
+            tripData.customer_address = '';
             tripData.pickup_location = pickup;
         }
         return true;
@@ -187,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // -----------------------------------------
     function generateSummary() {
         // UI Update
+        document.getElementById('sumName').textContent = tripData.customer_name;
         document.getElementById('sumDest').textContent = tripData.destinations.join(', ');
         document.getElementById('sumDuration').textContent = tripData.duration;
         document.getElementById('sumPax').textContent = `${tripData.adults} Adults, ${tripData.children} Children (${tripData.travel_type})`;
