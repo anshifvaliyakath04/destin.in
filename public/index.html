@@ -254,8 +254,112 @@
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="bg-light">
+        <div class="container">
+            <h2 class="section-title">What our clients say about traveling with Destin.in</h2>
+            <p class="section-subtitle">Explore their stories and see how Destin.in helps travelers explore Kerala with comfort and confidence. Your perfect vacation is our biggest win.</p>
+            <div style="text-align: center; margin-bottom: 3rem; margin-top: -1.5rem;">
+                <button class="btn btn-primary" onclick="openReviewModal()"><i class="fa-solid fa-pen-to-square"></i> Submit a Review</button>
+            </div>
+            
+            <div class="testimonials-slider">
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-left quote-icon"></i>
+                    <p class="testimonial-text">Destin.in made our Kerala trip absolutely unforgettable. The houseboat experience in Alleppey was breathtaking, and the entire itinerary was perfectly organized. Highly recommended for a stress-free vacation!</p>
+                    <div class="testimonial-footer">
+                        <div class="testimonial-user">
+                            <div class="user-avatar" style="background-image: url('https://ui-avatars.com/api/?name=Arjun+Sharma&background=random');"></div>
+                            <div class="user-info">
+                                <h4>Arjun Sharma</h4>
+                                <span>Family Vacation</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-rating">
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <span class="rating-text">5.0 Ratings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-left quote-icon"></i>
+                    <p class="testimonial-text">We've booked several trips before, but none matched the flexibility and premium service of Destin.in. The Munnar resort they picked for our honeymoon was incredibly romantic. Destin.in just works—and works brilliantly.</p>
+                    <div class="testimonial-footer">
+                        <div class="testimonial-user">
+                            <div class="user-avatar" style="background-image: url('https://ui-avatars.com/api/?name=Priya+Patel&background=random');"></div>
+                            <div class="user-info">
+                                <h4>Priya Patel</h4>
+                                <span>Honeymoon Trip</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-rating">
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            </div>
+                            <span class="rating-text">4.8 Ratings</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeReviewModal()">&times;</span>
+            <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Share Your Experience</h3>
+            <form id="reviewForm" enctype="multipart/form-data">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Your Name *</label>
+                    <input type="text" id="reviewName" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Trip Type *</label>
+                    <select id="reviewTripType" class="form-control" required>
+                        <option value="Family Vacation">Family Vacation</option>
+                        <option value="Honeymoon Trip">Honeymoon Trip</option>
+                        <option value="Solo Traveler">Solo Traveler</option>
+                        <option value="Group Trip">Group Trip</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Rating *</label>
+                    <div class="rating-input">
+                        <input type="radio" name="rating" id="star5" value="5" required><label for="star5">★</label>
+                        <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
+                        <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
+                        <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
+                        <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Your Review *</label>
+                    <textarea id="reviewText" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="reviewImages">Attach Photos (Max 5)</label>
+                    <input type="file" id="reviewImages" accept="image/*" class="form-control" style="padding: 0.5rem;" multiple>
+                </div>
+                <p id="reviewError" style="color: red; display: none; margin-bottom: 1rem; font-size: 0.9rem;"></p>
+                <button type="submit" class="btn btn-primary" id="submitReviewBtn" style="width: 100%;">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/917356821364" class="floating-whatsapp" target="_blank" rel="noopener noreferrer">
+    <a href="https://wa.me/917356821364" id="whatsapp-floating" class="floating-whatsapp" target="_blank" rel="noopener noreferrer">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
@@ -300,10 +404,10 @@
                             <i class="fa-solid fa-phone" style="color: var(--accent-color); margin-top: 5px;"></i>
                             <span>+91 7356821364</span>
                         </div>
-                        <div style="display: flex; gap: 10px; color: #aaa;">
+                        <a href="https://wa.me/917356821364" id="whatsapp-footer-link" target="_blank" rel="noopener noreferrer" style="display: flex; gap: 10px; color: #aaa; text-decoration: none;">
                             <i class="fa-brands fa-whatsapp" style="color: var(--accent-color); margin-top: 5px;"></i>
-                            <span>+91 7356821364</span>
-                        </div>
+                            <span id="whatsapp-footer-text">+91 7356821364</span>
+                        </a>
                         <div style="display: flex; gap: 10px; color: #aaa;">
                             <i class="fa-solid fa-envelope" style="color: var(--accent-color); margin-top: 5px;"></i>
                             <span>info@destin.in</span>

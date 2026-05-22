@@ -192,7 +192,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auth Check for Navigation
     updateNavForAuth();
+
+    // Fetch Public Settings (WhatsApp Number)
+    fetchSettings();
 });
+
+async function fetchSettings() {
+    try {
+        const BASE_URL = window.location.port === '5000' ? '' : 'http://localhost:5000';
+        const res = await fetch(`${BASE_URL}/api/settings`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.whatsapp_number) {
+                const floatingWA = document.getElementById('whatsapp-floating');
+                const footerWA = document.getElementById('whatsapp-footer-link');
+                const footerText = document.getElementById('whatsapp-footer-text');
+                
+                const waLink = `https://wa.me/${data.whatsapp_number}`;
+                
+                if (floatingWA) floatingWA.href = waLink;
+                if (footerWA) footerWA.href = waLink;
+                if (footerText) footerText.textContent = `+${data.whatsapp_number}`;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to fetch settings:', err);
+    }
+}
 
 function updateNavForAuth() {
     const token = localStorage.getItem('token');
@@ -200,13 +226,12 @@ function updateNavForAuth() {
     const authLink = document.getElementById('auth-link');
     
     if (authLink) {
-        if (token && user) {
-            authLink.innerHTML = `<a href="#" onclick="logout()" class="btn btn-outline" style="padding: 0.5rem 1.5rem; margin-left: 1rem;">Logout (${user.name})</a>`;
-            if (user.role === 'admin') {
-                authLink.innerHTML += `<a href="admin.html" style="margin-left:1rem; color:var(--bg-white);">Admin Panel</a>`;
-            }
+        if (token && user && user.role === 'admin') {
+            authLink.style.display = 'inline-block';
+            authLink.innerHTML = `<a href="admin.html" class="btn btn-outline" style="padding: 0.5rem 1.5rem; margin-left: 1rem; color:white;">Admin Panel</a> <a href="#" onclick="logout()" style="margin-left:1rem; color:white;">Logout</a>`;
         } else {
-            authLink.innerHTML = `<a href="login.html" class="btn btn-outline" style="padding: 0.5rem 1.5rem; margin-left: 1rem;">Login</a>`;
+            // Hide the login link entirely for regular users
+            authLink.style.display = 'none';
         }
     }
 }
@@ -312,3 +337,233 @@ function loadDestinationData(id) {
         `;
     });
 }
+
+// -------------------------------------------------------------------
+// Dynamic Testimonials
+// -------------------------------------------------------------------
+
+function openReviewModal() {
+    document.getElementById('reviewModal').classList.add('active');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('reviewModal');
+    if (e.target === modal) {
+        closeReviewModal();
+    }
+});
+
+async function fetchTestimonials() {
+    const slider = document.querySelector('.testimonials-slider');
+    if (!slider) return;
+
+    try {
+        const API_URL = window.location.port === '5000' ? '/api' : 'http://localhost:5000/api';
+        const BASE_URL = window.location.port === '5000' ? '' : 'http://localhost:5000';
+        const res = await fetch(`${API_URL}/testimonials`);
+        const testimonials = await res.json();
+
+        if (testimonials && testimonials.length > 0) {
+            slider.innerHTML = ''; // clear static ones
+            
+            // Get recent review from localStorage
+            let recentReview = null;
+            try {
+                recentReview = JSON.parse(localStorage.getItem('recentReview'));
+            } catch(e) {}
+
+            testimonials.forEach(t => {
+                const avatarStyle = `background-image: url('https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=random');`;
+                
+                let starsHtml = '';
+                for(let i=1; i<=5; i++) {
+                    if (i <= t.rating) {
+                        starsHtml += '<i class="fa-solid fa-star"></i>';
+                    } else {
+                        starsHtml += '<i class="fa-regular fa-star"></i>';
+                    }
+                }
+
+                let attachedImageHtml = '';
+                if (t.images && t.images.length > 0) {
+                    let imagesContent = t.images.map(img => `<img src="${BASE_URL}${img}" alt="Traveler Photo" class="review-attached-image">`).join('');
+                    attachedImageHtml = `
+                        <div class="gallery-wrapper">
+                            ${t.images.length > 1 ? `<button class="gallery-scroll-btn gallery-scroll-left" onclick="scrollGallery(this, -160)"><i class="fa-solid fa-chevron-left"></i></button>` : ''}
+                            <div class="review-images-gallery">${imagesContent}</div>
+                            ${t.images.length > 1 ? `<button class="gallery-scroll-btn gallery-scroll-right" onclick="scrollGallery(this, 160)"><i class="fa-solid fa-chevron-right"></i></button>` : ''}
+                        </div>
+                    `;
+                } else if (t.image_url) {
+                    attachedImageHtml = `<div class="gallery-wrapper"><div class="review-images-gallery"><img src="${BASE_URL}${t.image_url}" alt="Traveler Photo" class="review-attached-image"></div></div>`;
+                }
+
+                // Format the review date
+                let formattedDate = '';
+                if (t.createdAt) {
+                    const dateObj = new Date(t.createdAt);
+                    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    formattedDate = `${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+                }
+
+                // Check if user owns this review and within 60s
+                let editBtnHtml = '';
+                if (recentReview && recentReview.id === t._id) {
+                    const ageInSeconds = (Date.now() - recentReview.timestamp) / 1000;
+                    if (ageInSeconds < 60) {
+                        // Pass JSON string properly escaped
+                        const tJson = JSON.stringify(t).replace(/"/g, '&quot;');
+                        editBtnHtml = `<button class="btn btn-primary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem; margin-top: 0.5rem;" onclick="editReview(event, '${tJson}')"><i class="fa-solid fa-pen"></i> Edit (1m)</button>`;
+                        
+                        // Automatically re-fetch after the window expires to hide the button
+                        setTimeout(() => { fetchTestimonials(); }, (60 - ageInSeconds) * 1000);
+                    } else {
+                        localStorage.removeItem('recentReview');
+                    }
+                }
+
+                slider.innerHTML += `
+                    <div class="testimonial-card">
+                        <i class="fa-solid fa-quote-left quote-icon"></i>
+                        <p class="testimonial-text">${t.review_text}</p>
+                        ${attachedImageHtml}
+                        <div class="testimonial-footer">
+                            <div class="testimonial-user">
+                                <div class="user-avatar" style="${avatarStyle}"></div>
+                                <div class="user-info">
+                                    <h4>${t.name}</h4>
+                                    <span style="display:flex; flex-direction:column; gap:2px;">
+                                        <span>${t.trip_type}</span>
+                                        ${formattedDate ? `<span style="font-size: 0.8rem; color: #888;">${formattedDate}</span>` : ''}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="testimonial-rating" style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <div class="stars">
+                                    ${starsHtml}
+                                </div>
+                                <span class="rating-text">${t.rating}.0 Ratings</span>
+                                ${editBtnHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load testimonials:', err);
+    }
+}
+
+// Global variable to hold editing review ID
+let editingReviewId = null;
+
+function scrollGallery(btn, amount) {
+    const gallery = btn.parentElement.querySelector('.review-images-gallery');
+    if (gallery) {
+        gallery.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+}
+
+function editReview(e, testimonialJson) {
+    e.preventDefault();
+    const t = JSON.parse(testimonialJson);
+    editingReviewId = t._id;
+    
+    document.getElementById('reviewName').value = t.name;
+    document.getElementById('reviewTripType').value = t.trip_type;
+    document.getElementById('reviewText').value = t.review_text;
+    const starInput = document.getElementById('star' + t.rating);
+    if (starInput) starInput.checked = true;
+    
+    // Clear file input
+    const fileInput = document.getElementById('reviewImages');
+    if (fileInput) fileInput.value = '';
+    
+    document.getElementById('submitReviewBtn').textContent = 'Update Review';
+    openReviewModal();
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchTestimonials();
+
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitReviewBtn');
+            const errorMsg = document.getElementById('reviewError');
+            errorMsg.style.display = 'none';
+
+            const name = document.getElementById('reviewName').value;
+            const tripType = document.getElementById('reviewTripType').value;
+            const text = document.getElementById('reviewText').value;
+            const ratingRadio = document.querySelector('input[name="rating"]:checked');
+            const rating = ratingRadio ? ratingRadio.value : 5;
+            const imageFiles = document.getElementById('reviewImages').files;
+
+            if (imageFiles.length > 5) {
+                errorMsg.textContent = 'You can upload a maximum of 5 photos.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('trip_type', tripType);
+            formData.append('rating', rating);
+            formData.append('review_text', text);
+            for (let i = 0; i < imageFiles.length; i++) {
+                formData.append('images', imageFiles[i]);
+            }
+
+            submitBtn.textContent = editingReviewId ? 'Updating...' : 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                const API_URL = window.location.port === '5000' ? '/api' : 'http://localhost:5000/api';
+                const endpoint = editingReviewId ? `${API_URL}/testimonials/${editingReviewId}` : `${API_URL}/testimonials`;
+                const method = editingReviewId ? 'PUT' : 'POST';
+
+                const res = await fetch(endpoint, {
+                    method: method,
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Save to localstorage for edit window
+                    if (!editingReviewId) {
+                        localStorage.setItem('recentReview', JSON.stringify({
+                            id: data.testimonial._id,
+                            timestamp: Date.now()
+                        }));
+                    }
+
+                    reviewForm.reset();
+                    editingReviewId = null;
+                    submitBtn.textContent = 'Submit Review';
+                    closeReviewModal();
+                    fetchTestimonials(); // reload testimonials
+                } else {
+                    const data = await res.json();
+                    errorMsg.textContent = data.error || 'Failed to submit review.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Server error. Try again later.';
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                if (!editingReviewId) submitBtn.textContent = 'Submit Review';
+            }
+        });
+    }
+});

@@ -61,6 +61,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Fetch and Render Testimonials
+    async function fetchAdminTestimonials() {
+        try {
+            const res = await fetch(`${API_URL}/admin/testimonials`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch testimonials');
+            const testimonials = await res.json();
+            
+            const tbody = document.querySelector('#testimonialsTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (testimonials.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No testimonials found.</td></tr>';
+                return;
+            }
+
+            testimonials.forEach(t => {
+                const tr = document.createElement('tr');
+                
+                let photoHtml = 'None';
+                const BASE_URL = window.location.port === '5000' ? '' : 'http://localhost:5000';
+                
+                if (t.images && t.images.length > 0) {
+                    let imgs = t.images.map(img => `<img src="${BASE_URL}${img}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">`).join('');
+                    photoHtml = `<div style="display:flex; gap:4px; flex-wrap:wrap; max-width: 150px;">${imgs}</div>`;
+                } else if (t.image_url) {
+                    photoHtml = `<img src="${BASE_URL}${t.image_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">`;
+                }
+
+                tr.innerHTML = `
+                    <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td>${t.trip_type}</td>
+                    <td>${t.rating} ★</td>
+                    <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${t.review_text}">${t.review_text}</td>
+                    <td>${photoHtml}</td>
+                    <td>
+                        <button class="action-btn btn-reject" style="padding: 0.3rem 0.6rem; border-radius: 4px;" onclick="deleteTestimonial('${t._id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    window.deleteTestimonial = async (id) => {
+        if (!confirm('Are you sure you want to completely remove this testimonial?\nThis action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/admin/testimonials/${id}`, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                alert(data.message || 'Testimonial deleted successfully!');
+                fetchAdminTestimonials();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Failed to delete testimonial.');
+            }
+        } catch (error) {
+            console.error('Error deleting testimonial:', error);
+            alert('Server error occurred while deleting testimonial.');
+        }
+    };
+
+
     // Fetch and Render Trips
     async function fetchTrips() {
         try {
@@ -90,6 +167,73 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
+
+    // Settings Logic
+    async function fetchSettings() {
+        try {
+            const res = await fetch(`${API_URL}/admin/settings`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const settings = await res.json();
+                document.getElementById('setWhatsapp').value = settings.whatsapp_number || '';
+                document.getElementById('setEmailUser').value = settings.email_user || '';
+                document.getElementById('setCompanyName').value = settings.email_from_name || '';
+            }
+        } catch (error) {
+            console.error('Failed to fetch settings:', error);
+        }
+    }
+
+    const settingsForm = document.getElementById('settingsForm');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveSettingsBtn');
+            const msg = document.getElementById('settingsMessage');
+            btn.textContent = 'Saving...';
+            msg.textContent = '';
+            
+            const whatsapp_number = document.getElementById('setWhatsapp').value;
+            const email_user = document.getElementById('setEmailUser').value;
+            const email_pass = document.getElementById('setEmailPass').value;
+            const email_from_name = document.getElementById('setCompanyName').value;
+
+            try {
+                const res = await fetch(`${API_URL}/admin/settings`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ whatsapp_number, email_user, email_pass, email_from_name })
+                });
+
+                if (res.ok) {
+                    msg.style.color = 'green';
+                    msg.textContent = 'Settings saved successfully!';
+                    document.getElementById('setEmailPass').value = '';
+                } else {
+                    const data = await res.json();
+                    msg.style.color = 'red';
+                    msg.textContent = data.error || 'Failed to save settings.';
+                }
+            } catch (error) {
+                console.error(error);
+                msg.style.color = 'red';
+                msg.textContent = 'Network error saving settings.';
+            } finally {
+                btn.textContent = 'Save Settings';
+                setTimeout(() => { msg.textContent = ''; }, 5000);
+            }
+        });
+    }
+
+    // Initialize data
+    fetchTrips();
+    fetchStats();
+    fetchAdminTestimonials();
+    fetchSettings();
 
     // Render Trips to Separate Tables grouped by Travel Type
     function renderTrips(trips) {
@@ -686,4 +830,5 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchUsers();
     fetchTrips();
     fetchStats();
+    fetchAdminTestimonials();
 });

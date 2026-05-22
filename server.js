@@ -10,6 +10,7 @@ require('dotenv').config();
 // Import Models
 const User = require('./models/User');
 const Trip = require('./models/Trip');
+const Setting = require('./models/Setting');
 
 const app = express();
 
@@ -28,19 +29,29 @@ const PORT = process.env.PORT || 5000;
 // ---------------------------------------------------------
 let transporter;
 const initEmail = async () => {
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-        console.log(`Email Service: Real Gmail Transport configured for "${process.env.EMAIL_USER}"`);
-    } else {
-        console.log('No EMAIL_USER and EMAIL_PASS environment variables found in .env.');
-        console.log('Attempting to configure Nodemailer Ethereal SMTP account for testing...');
-        try {
+    try {
+        let emailUser = process.env.EMAIL_USER;
+        let emailPass = process.env.EMAIL_PASS;
+        
+        // Try getting from DB Settings
+        const settings = await Setting.findOne();
+        if (settings && settings.email_user && settings.email_pass) {
+            emailUser = settings.email_user;
+            emailPass = settings.email_pass;
+        }
+
+        if (emailUser && emailPass) {
+            transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: emailUser,
+                    pass: emailPass
+                }
+            });
+            console.log(`Email Service: Real Gmail Transport configured for "${emailUser}"`);
+        } else {
+            console.log('No EMAIL_USER and EMAIL_PASS found in DB or .env.');
+            console.log('Attempting to configure Nodemailer Ethereal SMTP account for testing...');
             const testAccount = await nodemailer.createTestAccount();
             transporter = nodemailer.createTransport({
                 host: 'smtp.ethereal.email',
@@ -54,12 +65,34 @@ const initEmail = async () => {
             console.log('✅ Nodemailer Ethereal SMTP test account successfully generated!');
             console.log(`   - Username: ${testAccount.user}`);
             console.log('   - Emails will generate preview URLs in the server console.');
-        } catch (err) {
-            console.error('❌ Failed to generate Nodemailer Ethereal test account:', err);
         }
+    } catch (err) {
+        console.error('❌ Failed to initialize email:', err);
     }
 };
 initEmail();
+
+const getEmailSenderConfig = async () => {
+    let fromName = 'Destin.in Tours';
+    let fromEmail = process.env.EMAIL_USER || 'admin@destin.in';
+
+    try {
+        const settings = await Setting.findOne();
+        if (settings) {
+            if (settings.email_user) {
+                fromEmail = settings.email_user;
+            }
+            if (settings.email_from_name) {
+                fromName = settings.email_from_name;
+            }
+        }
+    } catch (err) {}
+
+    return {
+        from: `"${fromName}" <${fromEmail}>`,
+        replyTo: fromEmail
+    };
+};
 
 const sendConfirmationEmail = async (email, name, destination, status, trip = null, reason = '') => {
     if (!transporter) {
@@ -187,9 +220,11 @@ const sendConfirmationEmail = async (email, name, destination, status, trip = nu
     }
 
     try {
-        const fromAddress = process.env.EMAIL_USER ? `"${process.env.EMAIL_USER}"` : '"Destin.in Admin" <admin@destin.in>';
+        const senderConfig = await getEmailSenderConfig();
+        
         const info = await transporter.sendMail({
-            from: fromAddress,
+            from: senderConfig.from,
+            replyTo: senderConfig.replyTo,
             to: email,
             subject: subject,
             html: htmlContent
@@ -203,6 +238,50 @@ const sendConfirmationEmail = async (email, name, destination, status, trip = nu
         }
     } catch (error) {
         console.error('❌ Error sending email:', error);
+    }
+};
+
+const sendAdminNotificationEmail = async (trip) => {
+    if (!transporter) return;
+
+    try {
+        const settings = await Setting.findOne();
+        let adminEmail = process.env.EMAIL_USER || 'admin@destin.in';
+        if (settings && settings.email_user) {
+            adminEmail = settings.email_user;
+        }
+
+        const senderConfig = await getEmailSenderConfig();
+        
+        const destNames = Array.isArray(trip.destinations) ? trip.destinations.join(', ') : (trip.destinations || 'N/A');
+
+        const htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 1rem;">
+                <h2>New Tour Booking Alert!</h2>
+                <p>A new tour package request has been submitted.</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr><td style="padding: 6px 0; font-weight: bold; width: 40%;">Customer Name:</td><td>${trip.customer_name}</td></tr>
+                    <tr><td style="padding: 6px 0; font-weight: bold;">Email:</td><td>${trip.customer_email}</td></tr>
+                    <tr><td style="padding: 6px 0; font-weight: bold;">Phone:</td><td>${trip.customer_phone}</td></tr>
+                    <tr><td style="padding: 6px 0; font-weight: bold;">Destination(s):</td><td>${destNames}</td></tr>
+                    <tr><td style="padding: 6px 0; font-weight: bold;">Start Date:</td><td>${trip.start_date ? new Date(trip.start_date).toLocaleDateString() : 'N/A'}</td></tr>
+                    <tr><td style="padding: 6px 0; font-weight: bold;">Duration:</td><td>${trip.duration}</td></tr>
+                </table>
+                <p style="margin-top: 1rem;"><a href="${process.env.BASE_URL || 'http://localhost:5000'}/admin.html" style="background: #3498db; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 5px;">View in Admin Dashboard</a></p>
+            </div>
+        `;
+
+        await transporter.sendMail({
+            from: senderConfig.from,
+            replyTo: senderConfig.replyTo,
+            to: adminEmail,
+            subject: `🚨 New Booking Alert: ${trip.customer_name} - ${destNames}`,
+            html: htmlContent
+        });
+        
+        console.log(`✅ Admin Notification Email sent to ${adminEmail}`);
+    } catch (error) {
+        console.error('❌ Error sending admin notification email:', error);
     }
 };
 
@@ -354,8 +433,11 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             return res.status(200).json({ message: 'OTP generated (check server console). Email service not configured.' });
         }
 
+        const senderConfig = await getEmailSenderConfig();
+
         await transporter.sendMail({
-            from: process.env.EMAIL_USER || '"Destin.in" <noreply@destin.in>',
+            from: senderConfig.from,
+            replyTo: senderConfig.replyTo,
             to: email,
             subject: '🔐 Your Destin.in Password Reset OTP',
             html: `
@@ -492,6 +574,10 @@ app.post('/api/trips', optionalVerifyToken, async (req, res) => {
         });
         
         await newTrip.save();
+        
+        // Notify the Admin
+        sendAdminNotificationEmail(newTrip);
+
         res.status(201).json({ message: 'Trip planned and saved successfully!' });
     } catch (error) {
         console.error(error);
@@ -813,6 +899,169 @@ app.delete('/api/admin/trips/:id', [verifyToken, isAdmin], async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete trip booking.' });
+    }
+});
+
+// ---------------------------------------------------------
+// Testimonial Routes & Multer config
+// ---------------------------------------------------------
+const multer = require('multer');
+const fs = require('fs');
+const Testimonial = require('./models/Testimonial');
+
+const uploadDir = path.join(__dirname, 'public', 'uploads', 'testimonials');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+app.get('/api/testimonials', async (req, res) => {
+    try {
+        const testimonials = await Testimonial.find({ status: 'Approved' }).sort({ createdAt: -1 });
+        res.status(200).json(testimonials);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch testimonials' });
+    }
+});
+
+app.post('/api/testimonials', upload.array('images', 5), async (req, res) => {
+    try {
+        const { name, trip_type, rating, review_text } = req.body;
+        
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            images = req.files.map(file => '/uploads/testimonials/' + file.filename);
+        }
+
+        const newTestimonial = new Testimonial({
+            name,
+            trip_type,
+            rating: Number(rating),
+            review_text,
+            images
+        });
+
+        await newTestimonial.save();
+        res.status(201).json({ message: 'Testimonial submitted successfully!', testimonial: newTestimonial });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to submit testimonial' });
+    }
+});
+
+app.put('/api/testimonials/:id', upload.array('images', 5), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, trip_type, rating, review_text } = req.body;
+        
+        const testimonial = await Testimonial.findById(id);
+        if (!testimonial) return res.status(404).json({ error: 'Testimonial not found' });
+
+        // Check if within 60 seconds of creation
+        const ageInSeconds = (Date.now() - new Date(testimonial.createdAt).getTime()) / 1000;
+        if (ageInSeconds > 60) {
+            return res.status(403).json({ error: 'Edit time window (1 minute) has expired.' });
+        }
+
+        testimonial.name = name;
+        testimonial.trip_type = trip_type;
+        testimonial.rating = Number(rating);
+        testimonial.review_text = review_text;
+
+        if (req.files && req.files.length > 0) {
+            testimonial.images = req.files.map(file => '/uploads/testimonials/' + file.filename);
+        }
+
+        await testimonial.save();
+        res.status(200).json({ message: 'Testimonial updated successfully!', testimonial });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update testimonial' });
+    }
+});
+
+app.get('/api/admin/testimonials', [verifyToken, isAdmin], async (req, res) => {
+    try {
+        const testimonials = await Testimonial.find().sort({ createdAt: -1 });
+        res.status(200).json(testimonials);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch testimonials' });
+    }
+});
+
+app.delete('/api/admin/testimonials/:id', [verifyToken, isAdmin], async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedTestimonial = await Testimonial.findByIdAndDelete(id);
+        if (!deletedTestimonial) {
+            return res.status(404).json({ error: 'Testimonial not found.' });
+        }
+        res.status(200).json({ message: 'Testimonial deleted successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete testimonial.' });
+    }
+});
+
+// ---------------------------------------------------------
+// Settings Routes
+// ---------------------------------------------------------
+
+app.get('/api/settings', async (req, res) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) {
+            settings = await Setting.create({});
+        }
+        res.status(200).json({ whatsapp_number: settings.whatsapp_number });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch public settings' });
+    }
+});
+
+app.get('/api/admin/settings', [verifyToken, isAdmin], async (req, res) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) {
+            settings = await Setting.create({});
+        }
+        res.status(200).json(settings);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch admin settings' });
+    }
+});
+
+app.put('/api/admin/settings', [verifyToken, isAdmin], async (req, res) => {
+    try {
+        const { whatsapp_number, email_user, email_pass, email_from_name, email_from_address, admin_notification_email } = req.body;
+        let settings = await Setting.findOne();
+        if (!settings) {
+            settings = new Setting();
+        }
+        if (whatsapp_number !== undefined) settings.whatsapp_number = whatsapp_number;
+        if (email_user !== undefined) settings.email_user = email_user;
+        if (email_pass) settings.email_pass = email_pass;
+        if (email_from_name !== undefined) settings.email_from_name = email_from_name;
+        if (email_from_address !== undefined) settings.email_from_address = email_from_address;
+        if (admin_notification_email !== undefined) settings.admin_notification_email = admin_notification_email;
+        
+        await settings.save();
+        
+        // Re-initialize email service
+        await initEmail();
+
+        res.status(200).json({ message: 'Settings updated successfully!', settings });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update settings' });
     }
 });
 
