@@ -262,6 +262,56 @@ const destinationData = {
             { name: "Kolukkumalai", img: "assets/kolukkumalai.png" }
         ]
     },
+    wayanad: {
+        title: "Wayanad",
+        subtitle: "Where forests whisper and mountains touch the clouds",
+        image: "assets/wayanad.png",
+        description: "Wayanad is a serene hill destination known for its lush forests, misty mountains, waterfalls, and rich history. Perfect for nature lovers and adventure seekers, it offers a refreshing escape into the heart of Kerala.",
+        bestTime: "October to May",
+        activities: ["Cave Exploration", "Mountain Trekking", "Wildlife Safaris", "Camping"],
+        places: [
+            { name: "Kuruva Island", img: "assets/kuruva_island.png" },
+            { name: "Lakkidi View Point", img: "assets/lakkidi_viewpoint.png" },
+            { name: "Tholpetty Wildlife Sanctuary", img: "assets/tholpetty_wildlife.png" },
+            { name: "Edakkal Caves", img: "assets/edakkal_caves.png" },
+            { name: "Pookode Lake", img: "assets/pookode_lake.png" },
+            { name: "Chembra Peak", img: "assets/chembra_peak.png" },
+            { name: "Soochipara Waterfalls", img: "assets/soochipara_waterfalls.png" },
+            { name: "Banasura Sagar Dam", img: "assets/banasura_dam.png" }
+        ]
+    },
+    vattavada: {
+        title: "Vattavada",
+        subtitle: "Experience the Beauty of Endless Valleys and Fresh Harvests",
+        image: "assets/vattavada.png",
+        description: "Vattavada is a beautiful hill village located near Munnar in the Western Ghats. Surrounded by lush green mountains, mist-covered valleys, and fertile farmlands, it is one of Kerala's most peaceful and scenic destinations. Often referred to as the \"Kashmir of Kerala\", Vattavada offers a refreshing climate, breathtaking landscapes, and a unique rural charm away from crowded tourist spots.",
+        bestTime: "September to April",
+        activities: ["Farm Tours", "Trekking", "Nature Trails", "National Park Safaris", "Camping"],
+        places: [
+            { name: "Organic Vegetable & Strawberry Farms", img: "assets/vattavada_farms.png" },
+            { name: "Silent Valley Trails", img: "assets/vattavada_silent_valley.png" },
+            { name: "Pampadum Shola National Park", img: "assets/vattavada_pampadum.png" },
+            { name: "Kurinjimala Sanctuary", img: "assets/vattavada_kurinjimala.png" },
+            { name: "Vattavada Viewpoint", img: "assets/vattavada_viewpoint.png" }
+        ]
+    },
+    vagamon: {
+        title: "Vagamon",
+        subtitle: "A peaceful escape into rolling meadows and misty valleys",
+        image: "assets/vagamon.png",
+        description: "Vagamon is a peaceful hill station located in the Idukki district of Kerala. Surrounded by rolling green meadows, tea plantations, pine forests, and mist-covered hills, it is one of Kerala's most beautiful offbeat destinations. With its cool climate and serene atmosphere, Vagamon is perfect for nature lovers, couples, families, and adventure seekers.",
+        bestTime: "September to May",
+        activities: ["Pine Forest Trekking", "Hill Climbing", "Meadow Walks", "Paragliding", "Offroad Jeep Safari"],
+        places: [
+            { name: "Pine Forest", img: "assets/vagamon_pine_forest.png" },
+            { name: "Thangalpara", img: "assets/vagamon_thangalpara.png" },
+            { name: "Anayirankal Dam", img: "assets/vagamon_anayirankal_dam.png" },
+            { name: "Marayoor", img: "assets/vagamon_marayoor.png" },
+            { name: "Kurisumala", img: "assets/vagamon_kurisumala.png" },
+            { name: "Devikulam", img: "assets/vagamon_devikulam.png" },
+            { name: "Chinnar Wildlife Sanctuary", img: "assets/vagamon_chinnar.png" }
+        ]
+    },
     alleppey: {
         title: "Alleppey",
         subtitle: "Venice of the East",

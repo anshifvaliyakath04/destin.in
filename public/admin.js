@@ -167,73 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
-
-    // Settings Logic
-    async function fetchSettings() {
-        try {
-            const res = await fetch(`${API_URL}/admin/settings`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const settings = await res.json();
-                document.getElementById('setWhatsapp').value = settings.whatsapp_number || '';
-                document.getElementById('setEmailUser').value = settings.email_user || '';
-                document.getElementById('setCompanyName').value = settings.email_from_name || '';
-            }
-        } catch (error) {
-            console.error('Failed to fetch settings:', error);
-        }
-    }
-
-    const settingsForm = document.getElementById('settingsForm');
-    if (settingsForm) {
-        settingsForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveSettingsBtn');
-            const msg = document.getElementById('settingsMessage');
-            btn.textContent = 'Saving...';
-            msg.textContent = '';
-            
-            const whatsapp_number = document.getElementById('setWhatsapp').value;
-            const email_user = document.getElementById('setEmailUser').value;
-            const email_pass = document.getElementById('setEmailPass').value;
-            const email_from_name = document.getElementById('setCompanyName').value;
-
-            try {
-                const res = await fetch(`${API_URL}/admin/settings`, {
-                    method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ whatsapp_number, email_user, email_pass, email_from_name })
-                });
-
-                if (res.ok) {
-                    msg.style.color = 'green';
-                    msg.textContent = 'Settings saved successfully!';
-                    document.getElementById('setEmailPass').value = '';
-                } else {
-                    const data = await res.json();
-                    msg.style.color = 'red';
-                    msg.textContent = data.error || 'Failed to save settings.';
-                }
-            } catch (error) {
-                console.error(error);
-                msg.style.color = 'red';
-                msg.textContent = 'Network error saving settings.';
-            } finally {
-                btn.textContent = 'Save Settings';
-                setTimeout(() => { msg.textContent = ''; }, 5000);
-            }
-        });
-    }
-
     // Initialize data
     fetchTrips();
     fetchStats();
     fetchAdminTestimonials();
-    fetchSettings();
 
     // Render Trips to Separate Tables grouped by Travel Type
     function renderTrips(trips) {
