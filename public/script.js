@@ -259,7 +259,10 @@ const destinationData = {
             { name: "Mattupetty Dam", img: "assets/mattupetty_dam.png" },
             { name: "Kundala Lake", img: "assets/kundala_lake.png" },
             { name: "Attukad Waterfalls", img: "assets/attukad_waterfalls.png" },
-            { name: "Kolukkumalai", img: "assets/kolukkumalai.png" }
+            { name: "Kolukkumalai", img: "assets/kolukkumalai.png" },
+            { name: "Anayirankal Dam", img: "assets/vagamon_anayirankal_dam.png" },
+            { name: "Marayoor", img: "assets/vagamon_marayoor.png" },
+            { name: "Devikulam", img: "assets/vagamon_devikulam.png" }
         ]
     },
     wayanad: {
@@ -305,24 +308,22 @@ const destinationData = {
         places: [
             { name: "Pine Forest", img: "assets/vagamon_pine_forest.png" },
             { name: "Thangalpara", img: "assets/vagamon_thangalpara.png" },
-            { name: "Anayirankal Dam", img: "assets/vagamon_anayirankal_dam.png" },
-            { name: "Marayoor", img: "assets/vagamon_marayoor.png" },
-            { name: "Kurisumala", img: "assets/vagamon_kurisumala.png" },
-            { name: "Devikulam", img: "assets/vagamon_devikulam.png" },
-            { name: "Chinnar Wildlife Sanctuary", img: "assets/vagamon_chinnar.png" }
+            { name: "Kurisumala", img: "assets/vagamon_kurisumala.png" }
         ]
     },
     alleppey: {
         title: "Alleppey",
-        subtitle: "Venice of the East",
+        subtitle: "Sail through the enchanting backwaters of Kerala",
         image: "assets/alleppey.png",
-        description: "Famous for its serene backwaters, beautiful houseboats, and interconnected network of canals.",
+        description: "Alappuzha is a popular tourist destination, especially famed for its houseboat cruises that offer an immersive experience of Kerala's enchanting backwaters. This coastal city provides a perfect blend of natural beauty, cultural heritage, and serene water-based activities.",
         bestTime: "October to February",
-        activities: ["Houseboat Cruise", "Village Walks", "Canoeing", "Ayurvedic Spa"],
+        activities: ["Houseboat Cruise", "Village Walks", "Sunrise & Sunset Viewing", "Canoeing"],
         places: [
-            { name: "Vembanad Lake", img: "https://images.unsplash.com/photo-1621215320573-0414f48b11a5?auto=format&fit=crop&w=600&q=80" },
-            { name: "Marari Beach", img: "https://images.unsplash.com/photo-1598288825838-8422791cc352?auto=format&fit=crop&w=600&q=80" },
-            { name: "Alleppey Beach", img: "assets/beach.png" }
+            { name: "Kuttanad", img: "assets/kuttanad.png" },
+            { name: "Vembanad Lake Houseboat Cruise", img: "assets/vembanad_houseboat.png" },
+            { name: "Alappuzha Beach", img: "assets/alappuzha_beach.png" },
+            { name: "Marari Beach", img: "assets/marari_beach.png" },
+            { name: "Pathiramanal Island", img: "assets/pathiramanal.png" }
         ]
     },
     ponmudi: {

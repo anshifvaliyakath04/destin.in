@@ -12,54 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_URL = window.location.port === '5000' ? '/api' : 'http://localhost:5000/api';
     let allTrips = [];
 
-    // Fetch and Render Users
-    async function fetchUsers() {
-        try {
-            const res = await fetch(`${API_URL}/admin/users`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to fetch users');
-            const users = await res.json();
-            
-            const tbody = document.querySelector('#usersTable tbody');
-            tbody.innerHTML = '';
-            users.forEach(u => {
-                const tr = document.createElement('tr');
-                
-                let actionContent = '';
-                if (user && u.id === user.id) {
-                    actionContent = `<span style="color: #777; font-size: 0.85rem; font-style: italic; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-user-check"></i> You</span>`;
-                } else if (u.role === 'admin') {
-                    actionContent = `<span style="color: #777; font-size: 0.85rem; font-style: italic; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-shield-halved"></i> System Admin</span>`;
-                } else {
-                    actionContent = `<button class="action-btn btn-reject" style="padding: 0.3rem 0.6rem; border-radius: 4px;" onclick="deleteUser('${u.id}', '${u.email}')"><i class="fa-solid fa-user-minus"></i> Remove</button>`;
-                }
 
-                let contactInfo = `${u.name}`;
-                if (u.phone) {
-                    contactInfo += `<br><small style="color:#555; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px;"><i class="fa-solid fa-phone" style="font-size:0.75rem;"></i> ${u.phone}</small>`;
-                }
-                if (u.whatsapp) {
-                    contactInfo += `<br><small style="color:#2ecc71; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px;"><i class="fa-brands fa-whatsapp" style="font-size:0.85rem; font-weight:bold;"></i> ${u.whatsapp}</small>`;
-                }
-                if (u.address) {
-                    contactInfo += `<br><small style="color:#777; display: inline-flex; align-items: flex-start; gap: 4px; margin-top: 2px; line-height: 1.2; max-width: 250px; white-space: normal;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; margin-top:2px;"></i> ${u.address}</small>`;
-                }
-
-                tr.innerHTML = `
-                    <td>${u.id.substring(0, 8)}...</td>
-                    <td>${contactInfo}</td>
-                    <td>${u.email}</td>
-                    <td><span style="background:${u.role==='admin'?'var(--accent-gold)':'#eee'}; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${u.role}</span></td>
-                    <td>${new Date(u.created_at).toLocaleDateString()}</td>
-                    <td>${actionContent}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     // Fetch and Render Testimonials
     async function fetchAdminTestimonials() {
@@ -517,83 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
         XLSX.writeFile(wb, `Booking_${trip.user_name || trip.id}.xlsx`);
     };
     
-    // User Management Modal Handlers & API Operations
-    window.openAddUserModal = () => {
-        document.getElementById('addUserForm').reset();
-        document.getElementById('addUserModal').style.display = 'flex';
-    };
 
-    window.closeAddUserModal = () => {
-        document.getElementById('addUserModal').style.display = 'none';
-    };
-
-    window.submitAddUser = async (event) => {
-        event.preventDefault();
-        
-        const name = document.getElementById('newUserName').value.trim();
-        const email = document.getElementById('newUserEmail').value.trim();
-        const phone = document.getElementById('newUserPhone') ? document.getElementById('newUserPhone').value.trim() : '';
-        const whatsapp = document.getElementById('newUserWhatsapp') ? document.getElementById('newUserWhatsapp').value.trim() : '';
-        const address = document.getElementById('newUserAddress') ? document.getElementById('newUserAddress').value.trim() : '';
-        const password = document.getElementById('newUserPassword').value.trim();
-        const role = document.getElementById('newUserRole').value;
-
-        if (!name || !email || !password) {
-            alert('Name, email, and password are required.');
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/admin/users`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name, email, password, phone, whatsapp, address, role })
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                alert(data.message || 'User created successfully!');
-                closeAddUserModal();
-                fetchUsers();
-            } else {
-                const data = await res.json();
-                alert(data.error || 'Failed to create user.');
-            }
-        } catch (error) {
-            console.error('Error adding user:', error);
-            alert('Server error occurred while adding user.');
-        }
-    };
-
-    window.deleteUser = async (id, email) => {
-        if (!confirm(`Are you sure you want to completely remove the registered user "${email}"?\nThis action cannot be undone.`)) {
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/admin/users/${id}`, {
-                method: 'DELETE',
-                headers: { 
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                alert(data.message || 'User deleted successfully!');
-                fetchUsers();
-            } else {
-                const data = await res.json();
-                alert(data.error || 'Failed to delete user.');
-            }
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            alert('Server error occurred while deleting user.');
-        }
-    };
 
     window.deleteTrip = async (id) => {
         if (!confirm('Are you sure you want to completely remove this planned trip booking?\nThis action cannot be undone.')) {
@@ -764,7 +641,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initial Fetch
-    fetchUsers();
     fetchTrips();
     fetchStats();
     fetchAdminTestimonials();

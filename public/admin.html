@@ -160,30 +160,6 @@
             </div>
         </div>
 
-        <!-- Users Section -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                <h3 style="margin: 0;">Registered Users</h3>
-                <button class="action-btn" style="background: var(--primary-color); padding: 0.5rem 1.2rem; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; color: white; display: flex; align-items: center; gap: 0.5rem;" onclick="openAddUserModal()"><i class="fa-solid fa-user-plus"></i> Add New User</button>
-            </div>
-            <div style="overflow-x: auto;">
-                <table id="usersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Joined</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Users populated via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
         <!-- Testimonials Section -->
         <div class="card" style="margin-top: 2rem;">
@@ -268,59 +244,6 @@
         </div>
     </div>
 
-    <!-- Add User Modal -->
-    <div class="modal-overlay" id="addUserModal">
-        <div class="modal-content" style="max-width: 480px; text-align: left; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-            <h3 class="modal-title" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-color); font-size: 1.5rem;"><i class="fa-solid fa-user-plus"></i> Add New User</h3>
-            
-            <form id="addUserForm" onsubmit="submitAddUser(event)" style="display: flex; flex-direction: column; gap: 1.2rem;">
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <label for="newUserName" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Full Name</label>
-                    <input type="text" id="newUserName" required placeholder="John Doe" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%;">
-                </div>
-                
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <label for="newUserEmail" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Email Address</label>
-                    <input type="email" id="newUserEmail" required placeholder="john@example.com" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%;">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                        <label for="newUserPhone" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Phone Number (Optional)</label>
-                        <input type="tel" id="newUserPhone" placeholder="Phone number" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%;">
-                    </div>
-                    
-                    <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                        <label for="newUserWhatsapp" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">WhatsApp (Optional)</label>
-                        <input type="tel" id="newUserWhatsapp" placeholder="WhatsApp number" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%;">
-                    </div>
-                </div>
-
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <label for="newUserAddress" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Address (Optional)</label>
-                    <textarea id="newUserAddress" placeholder="User's address..." class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%; resize: vertical; min-height: 50px; font-family: inherit;"></textarea>
-                </div>
-                
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <label for="newUserPassword" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Password</label>
-                    <input type="password" id="newUserPassword" required placeholder="••••••••" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%;">
-                </div>
-                
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                    <label for="newUserRole" style="font-weight: 600; font-size: 0.9rem; color: var(--text-dark);">Account Role</label>
-                    <select id="newUserRole" class="form-control" style="padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%; background: white;">
-                        <option value="user">User (Standard)</option>
-                        <option value="admin">Admin (Full Access)</option>
-                    </select>
-                </div>
-                
-                <div class="modal-actions" style="margin-top: 1rem; display: flex; gap: 0.8rem; justify-content: flex-end;">
-                    <button type="button" class="modal-btn modal-btn-cancel" onclick="closeAddUserModal()" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; background: #95a5a6; border-radius: 6px;">Cancel</button>
-                    <button type="submit" class="modal-btn" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; background: var(--primary-color); border: none; border-radius: 6px; color: white; cursor: pointer; font-weight: 600; transition: opacity 0.2s;">Create User</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Add Trip Modal -->
     <div class="modal-overlay" id="addTripModal">
