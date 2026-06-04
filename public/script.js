@@ -47,8 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Destination Card Click
     const destCards = document.querySelectorAll('.dest-card');
     destCards.forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            // Prevent redirection if the user clicked on a link that goes to the trip planner
+            if (e.target.closest('a') && e.target.closest('a').getAttribute('href') === 'planner.html') {
+                return;
+            }
+            
             const destId = card.getAttribute('data-id');
+            // Varkala Beach and Athirapally are display-only (no details page redirection)
+            if (destId === 'varkala' || destId === 'athirapally') {
+                e.preventDefault();
+                return;
+            }
+            
             if(destId) {
                 window.location.href = `destination.html?id=${destId}`;
             }
@@ -292,7 +303,6 @@ const destinationData = {
         activities: ["Farm Tours", "Trekking", "Nature Trails", "National Park Safaris", "Camping"],
         places: [
             { name: "Organic Vegetable & Strawberry Farms", img: "assets/vattavada_farms.png" },
-            { name: "Silent Valley Trails", img: "assets/vattavada_silent_valley.png" },
             { name: "Pampadum Shola National Park", img: "assets/vattavada_pampadum.png" },
             { name: "Kurinjimala Sanctuary", img: "assets/vattavada_kurinjimala.png" },
             { name: "Vattavada Viewpoint", img: "assets/vattavada_viewpoint.png" }
@@ -352,6 +362,20 @@ const destinationData = {
             { name: "Pattumala Church", img: "assets/pattumala_church.png" },
             { name: "Coffee & Tea Plantations", img: "assets/peermade_plantations.png" },
             { name: "Scenic Waterfalls", img: "assets/peermade_waterfalls.png" }
+        ]
+    },
+    cochin: {
+        title: "Cochin",
+        subtitle: "Experience Heritage, Culture, and Modern Charm",
+        image: "assets/cochin.png",
+        description: "Kochi, often called the Queen of the Arabian Sea, is a vibrant coastal city in Kerala that beautifully blends history, culture, and modern life. Known for its colonial architecture, iconic Chinese fishing nets, bustling markets, and scenic waterfronts, Kochi offers a unique travel experience. Visitors can explore historic Fort Kochi, enjoy sunset views along Marine Drive, discover cultural landmarks, and experience the city's rich heritage and diverse cuisine.",
+        bestTime: "October to March",
+        activities: ["Sightseeing", "Cultural Shows", "Ferry Rides", "Shopping", "Food Tours"],
+        places: [
+            { name: "Fort Kochi", img: "assets/cochin_fort_kochi.jpg" },
+            { name: "Chinese Fishing Nets", img: "assets/cochin_chinese_nets.jpg" },
+            { name: "Mattancherry Palace", img: "assets/cochin_mattancherry.jpg" },
+            { name: "Sunset at Marine Drive", img: "assets/cochin_marine_drive.jpg" }
         ]
     }
 };
